@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "RFI_ENRICHMENT_QUEUE_NAME": "rfi-enrichment-queue",
+    "RFI_WORKFLOW_STATE_TABLE_NAME": "RfiWorkflowState",
+    "AUTODESK_CLIENT_ID": "your-aps-client-id",
+    "AUTODESK_CLIENT_SECRET": "your-aps-client-secret",
+    "AUTODESK_ACCESS_TOKEN": "",
+    "AUTODESK_RFI_DRAWING_MAP": "{\"A101\":{\"sourceUrn\":\"URL_SAFE_URN_OF_SOURCE_MODEL\",\"modelViewGuid\":\"MODEL_VIEW_OR_SHEET_GUID\"}}"
+  }
+}

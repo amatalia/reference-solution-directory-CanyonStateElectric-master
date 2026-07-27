@@ -1,0 +1,26 @@
+{
+  "id": 404,
+  "project_id": 12345,
+  "subject": "Switchgear Clearance Conflict in Main Electrical Room",
+  "status": "open",
+  "drawing_ids": [
+    8849,
+    8850
+  ],
+  "drawing_number": "A101",
+  "questions": [
+    {
+      "id": 102,
+      "plain_text_body": "The current architectural model shows a 3-foot clearance in front of the main switchgear. NEC requires a minimum of 4 feet for this specific voltage. Please advise if we can shift the interior wall 12 inches north.",
+      "created_by": "Site Foreman"
+    }
+  ],
+  "cost_code": {
+    "id": 16000,
+    "name": "Electrical Equipment"
+  },
+  "schedule_impact": {
+    "status": "tbd",
+    "value": 0
+  }
+}

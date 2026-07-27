@@ -1,0 +1,21 @@
+{
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run build)",
+      "Bash(npm run watch)",
+      "Bash(npm run clean)",
+      "Bash(npm test)",
+      "Bash(npx tsc:*)",
+      "Bash(func:*)",
+      "Bash(codegraph:*)",
+      "mcp__codegraph"
+    ],
+    "deny": [
+      "Read(./local.settings.json)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
