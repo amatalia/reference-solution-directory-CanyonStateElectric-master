@@ -30,6 +30,7 @@ src/
     AutodeskDerivativeWebhook.ts APS Model Derivative webhook callback endpoint
   services/
     autodeskService.ts       Autodesk Model Derivative SDK boundary
+    procoreService.ts        Procore REST API boundary (Show RFI, OAuth token)
     rfiAutodeskMappingService.ts Maps RFI drawing references to Autodesk identifiers
     rfiWorkflowStateService.ts Persists RFI workflow state in Azure Table Storage
   types/
@@ -124,6 +125,8 @@ new AutodeskModelDerivativeService(accessToken)
 ## Integration Boundary
 
 `RFIIngestion.ts` remains a webhook intake boundary. It validates and queues RFI context, but does not call Autodesk endpoints directly.
+
+Real Procore webhooks deliver a thin event envelope (`resource_name` / `event_type` / `resource_id` / `project_id`), not the full RFI resource. `RFIIngestion.ts` detects this shape and calls `procoreService.ts` (`Show RFI`) to hydrate it into a full `ProcoreRfiDetail` before continuing. A body that already looks like a full `ProcoreRfiDetail` (e.g. `mock-rfi.json`) is used as-is, so local testing doesn't require Procore credentials. `mock-rfi-webhook-envelope.json` exercises the real envelope + hydration path and needs `PROCORE_CLIENT_ID`/`PROCORE_CLIENT_SECRET` (or `PROCORE_ACCESS_TOKEN`) plus a company id.
 
 `RFIEnrichmentWorker.ts` owns the asynchronous Autodesk enrichment call. This is the scalable path for retries, queue depth autoscaling, and future orchestration.
 

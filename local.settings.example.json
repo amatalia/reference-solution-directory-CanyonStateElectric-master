@@ -8,6 +8,11 @@
     "AUTODESK_CLIENT_ID": "your-aps-client-id",
     "AUTODESK_CLIENT_SECRET": "your-aps-client-secret",
     "AUTODESK_ACCESS_TOKEN": "",
-    "AUTODESK_RFI_DRAWING_MAP": "{\"A101\":{\"sourceUrn\":\"URL_SAFE_URN_OF_SOURCE_MODEL\",\"modelViewGuid\":\"MODEL_VIEW_OR_SHEET_GUID\"}}"
+    "AUTODESK_RFI_DRAWING_MAP": "{\"A101\":{\"sourceUrn\":\"URL_SAFE_URN_OF_SOURCE_MODEL\",\"modelViewGuid\":\"MODEL_VIEW_OR_SHEET_GUID\"}}",
+    "PROCORE_API_BASE_URL": "https://sandbox.procore.com",
+    "PROCORE_CLIENT_ID": "your-procore-client-id",
+    "PROCORE_CLIENT_SECRET": "your-procore-client-secret",
+    "PROCORE_ACCESS_TOKEN": "",
+    "PROCORE_COMPANY_ID": "your-procore-company-id"
   }
 }

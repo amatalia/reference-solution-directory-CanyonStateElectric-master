@@ -26,9 +26,12 @@ Copy `local.settings.example.json` -> `local.settings.json` (gitignored) before 
 ## Architecture
 
 ```
-Procore webhook
-  -> RFIIngestion.ts        HTTP POST, authLevel 'function'. Validates, writes state, enqueues.
-                            Never calls Autodesk directly — this is the whole point.
+Procore webhook (thin envelope: resource_name/event_type/resource_id/project_id)
+  -> RFIIngestion.ts        HTTP POST, authLevel 'function'.
+       -> procoreService     Show RFI call to hydrate the envelope into a full ProcoreRfiDetail
+                              (skipped if the body already looks like a full detail, e.g. mock-rfi.json)
+                             Validates, writes state, enqueues.
+                             Never calls Autodesk directly — this is the whole point.
   -> storage queue          RFI_ENRICHMENT_QUEUE_NAME (default 'rfi-enrichment-queue')
   -> RFIEnrichmentWorker.ts Queue trigger. Owns the slow Autodesk work + retry semantics.
        -> rfiAutodeskMappingService   Procore drawing refs -> Autodesk sourceUrn / modelViewGuid
@@ -72,9 +75,17 @@ All via env / `local.settings.json` Values:
 | `AUTODESK_ACCESS_TOKEN` | takes priority over client credentials |
 | `AUTODESK_CLIENT_ID` / `AUTODESK_CLIENT_SECRET` | client-credentials fallback |
 | `AUTODESK_RFI_DRAWING_MAP` | JSON string: `{"A101":{"sourceUrn":"...","modelViewGuid":"..."}}` |
+| `PROCORE_API_BASE_URL` | defaults to `https://api.procore.com`; use `https://sandbox.procore.com` for testing |
+| `PROCORE_ACCESS_TOKEN` | takes priority over client credentials |
+| `PROCORE_CLIENT_ID` / `PROCORE_CLIENT_SECRET` | client-credentials fallback (`POST /oauth/token`) |
+| `PROCORE_COMPANY_ID` | required for `Procore-Company-Id` header if the webhook envelope omits `company_id` |
 
 Without APS credentials the worker resolves mapping, records `autodesk_deferred`, and returns
 cleanly. That is the expected no-credentials path, not a bug.
+
+Without Procore credentials, `RFIIngestion.ts` still works for full-detail bodies (`mock-rfi.json`)
+but throws (500, with the real error message) if it receives a real webhook envelope
+(`mock-rfi-webhook-envelope.json`), since hydrating requires `Show RFI`.
 
 ## Known rough edges
 
@@ -89,5 +100,12 @@ Flag these rather than silently working around them:
   calls.
 - `tsconfig.json` has `strict: false`, so the compiler will not catch null/undefined mistakes.
   Be conservative with optional fields.
-- No test harness exists. `mock-rfi.json` is the manual fixture for POSTing at the ingestion
-  endpoint.
+- No test harness exists. `mock-rfi.json` (full-detail body) and `mock-rfi-webhook-envelope.json`
+  (real thin envelope, requires Procore credentials) are the manual fixtures for POSTing at the
+  ingestion endpoint.
+- `RFIIngestion.ts` detects the real thin webhook envelope shape (`resource_name`/`event_type`/
+  `resource_id`) vs. a full-detail body via `isWebhookEnvelope()` and calls `procoreService.getRfi`
+  (`Show RFI`) to hydrate the envelope. Non-RFI `resource_name` values are acknowledged and
+  ignored. There is no `differences`/replay handling, and the caller-supplied
+  `company_id` on the envelope is trusted as-is (no verification against `PROCORE_COMPANY_ID`) —
+  fine for a reference repo, worth hardening before production use.
